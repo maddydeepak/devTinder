@@ -1,6 +1,38 @@
 const express = require("express");
-
+const { authAdmin, authUser } = require("./middlewares/auth");
 const app = express();
+
+app.use("/admin", authAdmin);
+app.use("/user", authUser);
+
+app.use("/admin/getAllusers", (req, res) => {
+  res.send("All users data sent");
+});
+
+// app.get(
+//   "/user",
+//   [
+//     (req, res, next) => {
+//       console.log("Request Handler 1");
+//       // res.send("Request Handler 1");
+//       next();
+//     },
+//     (req, res, next) => {
+//       console.log("Request Handler 2");
+//       //res.send("Request Handler 2");
+//       next();
+//     },
+//   ],
+//   (req, res, next) => {
+//     console.log("Request Handler 3");
+//     //res.send("Request Handler 3");
+//     next();
+//   },
+//   (req, res) => {
+//     console.log("Request Handler 4");
+//     res.send("Request Handler 4");
+//   }
+// );
 
 app.get(/.*fly$/, (req, res) => {
   res.send({ firstname: "Deepak", lastname: "Maddy" });
@@ -8,6 +40,7 @@ app.get(/.*fly$/, (req, res) => {
 
 app.get("/user", (req, res) => {
   console.log(req.query);
+  throw new Error("dsfs");
   res.send({ firstname: "Deepak", lastname: "Maddy" });
 });
 
@@ -32,8 +65,11 @@ app.delete("/user", (req, res) => {
   res.send("Data deleted successfully");
 });
 
-app.use("/", (req, res) => {
-  res.send("Hello from the server");
+app.use("/", (err, req, res, next) => {
+  if (err) {
+    res.status(500).send("Something went wrong");
+  }
+  // res.send("Hello from the server");
 });
 
 app.listen(7777);
